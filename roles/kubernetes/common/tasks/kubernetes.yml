@@ -1,0 +1,41 @@
+---
+# Install/configure the requirements needed by kubeadm/kubernetes
+
+- name: Kubernetes YUM repository
+  yum_repository:
+    name: kubernetes
+    description: "Kubernetes YUM repo"
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el{{ _major_version }}-x86_64
+    enabled: true
+    gpgcheck: true
+    repo_gpgcheck: true
+    gpgkey:
+      - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+      - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  vars:
+     # A CentOS 8 version for the the Yum repo does not exist, the Centos 7 RPMs are also suitable for Centos 8
+    _major_version: "{{ (ansible_distribution_major_version|int == 8) | ternary('7', ansible_distribution_major_version) }}"
+  
+
+- name: Install required packages for Kubernetes
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - "kubelet-{{ rpm_version }}"
+    - "kubeadm-{{ rpm_version }}"
+    - "kubectl-{{ rpm_version }}"
+    - tc
+
+- name: Kubernetes systctl settings
+  sysctl:
+      name: "{{ item.name }}"
+      value: "{{ item.value }}"
+  loop:
+    - { name: 'net.ipv4.ip_forward', value: 1 }
+
+- name: Run the kubelet service
+  service:
+    name: kubelet
+    state: started
+    enabled: true

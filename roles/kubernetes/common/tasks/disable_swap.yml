@@ -1,0 +1,29 @@
+---
+# Kubeadm/kubernetes requires that swap is disabled
+
+- name: Get swap information
+  command: grep -v ^Filename /proc/swaps
+  ignore_errors: true
+  failed_when: false
+  changed_when: false
+  register: _swapinfo
+
+- name: Disable system swap
+  shell: "swapoff -a"
+  vars:
+    _nr: "{{ _swapinfo.stdout_lines | count }}"
+  when: _nr | int > 0
+
+- name: Remove current swaps from fstab
+  lineinfile:
+    dest: /etc/fstab
+    regexp: '(?i)^([^#][\S]+\s+(none|swap)\s+swap.*)'
+    line: '# \1'
+    backrefs: yes
+    state: present
+    
+- name: Disable swappiness
+  sysctl:
+    name: "vm.swappiness"
+    value: "1"
+    state: present

@@ -1,0 +1,51 @@
+---
+- name: Check if a bootstrap token is present
+  stat:
+    path: "/etc/kubernetes/bootstrap_token"
+  register: bootstrap_token_file
+  delegate_to: "{{ first_master_node_ip_address }}"
+
+- name: Generate Kubeadm bootstrap token
+  command: kubeadm token generate
+  register: _generated_bootstrap_token
+  delegate_to: "{{ first_master_node_ip_address }}"
+  when:
+    - not bootstrap_token_file.stat.exists
+    - bootstrap_token is not defined
+
+- name: Store generated bootstrap token
+  copy:
+    dest: "/etc/kubernetes/bootstrap_token"
+    content: "{{ _generated_bootstrap_token.stdout }}"
+    mode: 0400
+    owner: root
+    group: root
+  delegate_to: "{{ first_master_node_ip_address }}"
+  when: _generated_bootstrap_token.stdout is defined
+
+- name: Store user provided bootstrap token
+  copy:
+    dest: "/etc/kubernetes/bootstrap_token"
+    content: "{{ bootstrap_token }}"
+    mode: 0400
+    owner: root
+    group: root
+  delegate_to: "{{ first_master_node_ip_address }}"
+  when: bootstrap_token is defined
+
+# Doing a cat, set_fact with lookup file does not work
+- name: Get bootstrap_token file content
+  command: cat /etc/kubernetes/bootstrap_token
+  register: _bootstrap_token_content
+  delegate_to: "{{ first_master_node_ip_address }}" 
+  changed_when: False
+
+- name: "Debug: bootstrap token (when debug is enabled)"
+  debug:
+    var: _bootstrap_token_content
+  when: (debug_master | bool)
+
+- name: Set bootstrap token fact
+  set_fact:
+    bootstrap_token: "{{ _bootstrap_token_content.stdout }}"
+  delegate_facts: True

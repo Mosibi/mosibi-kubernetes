@@ -1,0 +1,28 @@
+---
+debug_master: false
+apiserver_advertise_address: "{{ first_master_node_ip_address }}"
+service_cidr: "10.96.0.0/12"
+pod_network_cidr: "10.217.0.0/16"
+calico_etcd_service: "10.96.232.136"
+kubectl_on_control_host: true
+
+# Kubeadm
+kubeadm_opts: ""
+
+# Helm
+helm_version: v3.4.0
+
+# Cilium
+network_plugin: cilium
+cilium_release: 1.9.1    # see https://helm.cilium.io/
+install_hubble: true
+hubble_ui_ingress_hostname: hubble.example.com
+
+# Traefik
+install_traefik: true
+traefik_ingress_hostname: traefik.example.com
+
+# MetalLB
+install_metallb: true
+metallb_pool_start: 192.168.122.240
+metallb_pool_end: 192.168.122.250

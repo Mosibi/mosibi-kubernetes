@@ -1,0 +1,10 @@
+[masters]
+k8s-master1 ansible_host=192.168.122.100 ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter="/usr/bin/python3"
+
+[workers]
+k8s-worker1 ansible_host=192.168.122.101  ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter="/usr/bin/python3"
+k8s-worker2 ansible_host=192.168.122.102  ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter="/usr/bin/python3"
+k8s-worker3 ansible_host=192.168.122.103  ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter="/usr/bin/python3"
+
+[control]
+k8s-control ansible_host=192.168.122.99  ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter="/usr/bin/python3"

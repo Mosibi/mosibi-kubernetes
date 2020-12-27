@@ -1,0 +1,56 @@
+---
+kubeadmin_config: /etc/kubernetes/admin.conf
+
+# The ip address of the first master node is 
+# used to bootstrap a new cluster
+first_master_node_ip_address: "{{ hostvars[groups['masters'][0]]['ansible_default_ipv4'].address | default(groups['masters'][0]) }}"
+
+# Extent kubeadm options when Cilium is used
+extended_kubeadm_opts: "{{ (network_plugin == 'cilium') | ternary(kubeadm_opts + ' --skip-phases=addon/kube-proxy', kubeadm_opts) }}"
+
+cilium_helm_base_opts:
+  externalIPs:
+    enabled: true
+  hostPort:
+    enabled: true
+  hostServices:
+    enabled: false
+  image:
+    pullPolicy: IfNotPresent
+  ipam:
+    mode: kubernetes
+  k8sServiceHost: "{{ ansible_facts['default_ipv4']['address'] }}"
+  k8sServicePort: 6443
+  kubeProxyReplacement: strict
+  loadBalancer:
+    algorithm: maglev
+  nodeinit:
+    enabled: true
+  nodePort:
+    enabled: true
+  operator:
+    numReplicas: 1
+  
+# Set extra Helm chart options when Hubble is enabled
+cilium_helm_hubble_opts:
+  hubble:
+    enabled: true 
+    metrics:
+      enabled:
+        - dns
+        - drop
+        - tcp
+        - flow
+        - port-distribution
+        - icmp
+        - http
+    listenAddress: ":4244"
+    relay:
+      enabled: true
+    ui:
+      enabled: true
+
+# Create a dict cilium_helm_values which combines cilium_helm_base_opts and
+# cilium_helm_hubble_opts when install_hubble is set to True and only use
+# cilium_helm_base_opts when install_hubble is set to False
+cilium_helm_values: "{{ (install_hubble) | ternary(cilium_helm_base_opts | combine(cilium_helm_hubble_opts), cilium_helm_base_opts) }}"

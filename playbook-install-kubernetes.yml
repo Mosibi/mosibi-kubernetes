@@ -1,0 +1,38 @@
+---
+- name: Configure the control host
+  hosts:
+    - control
+  become: true
+  roles:
+    - { role: kubernetes/control, tags: kubernetes-control }
+
+- name: Deploy Kubernetes common parts
+  hosts:
+    - masters
+    - workers
+  gather_facts: true
+  become: true
+  roles:
+    - { role: kubernetes/common, tags: kubernetes-common }
+
+- name: Execute Kubernetes master parts
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
+  hosts:
+    - masters
+  gather_facts: true
+  become: true
+  roles:
+    - { role: kubernetes/master, tags: kubernetes-masters }
+
+- name: Execute Kubernetes worker parts
+  hosts:
+    - workers
+  gather_facts: true
+  become: true
+  roles:
+    - { role: kubernetes/worker, tags: kubernetes-workers }
+
+    
+
+

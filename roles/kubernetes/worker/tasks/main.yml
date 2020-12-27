@@ -1,0 +1,11 @@
+---
+- name: Debug join command
+  debug:
+    msg: "kubeadm join --token {{ bootstrap_token }} {{ first_master_node }}:6443 --discovery-token-ca-cert-hash sha256:{{ discovery_token_ca_cert_hash }}"
+  when:
+    - (debug_worker | bool)
+  
+- name: Join cluster
+  command: "kubeadm join --token {{ bootstrap_token }} {{ first_master_node }}:6443 --discovery-token-ca-cert-hash sha256:{{ discovery_token_ca_cert_hash }} --node-name {{ ansible_hostname }}"
+  args: 
+    creates: /etc/kubernetes/kubelet.conf

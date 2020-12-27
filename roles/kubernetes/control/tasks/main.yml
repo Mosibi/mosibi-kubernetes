@@ -1,0 +1,40 @@
+---
+- name: Download kubectl and configure local kube config direcory
+  block:
+    - name: Download kubectl
+      get_url:
+        url: https://storage.googleapis.com/kubernetes-release/release/{{ kubernetes_version }}/bin/linux/amd64/kubectl
+        dest: /usr/local/bin/kubectl
+        mode: 0755
+      tags:
+        - control
+    
+    - name: Get user information
+      command: "getent passwd {{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
+      changed_when: false
+      failed_when: false
+      register: _user_info
+      tags:
+        - control
+    
+    - name: Create kube config directory
+      file:
+        path: "{{ _user_info.stdout.split(':')[5] | default('/root') }}/.kube"
+        state: directory
+        owner: "{{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
+        group: "{{ ansible_facts['env']['SUDO_GID'] | default(0) }}"
+      tags:
+        - control
+
+    - name: Configure bash completion
+      lineinfile:
+        path: "{{ _user_info.stdout.split(':')[5] | default('/root') }}/.bashrc"
+        owner: "{{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
+        group: "{{ ansible_facts['env']['SUDO_GID'] | default(0) }}"
+        create: True
+        line: "source <(kubectl completion bash)"
+      when: ansible_facts['user_shell'] == '/bin/bash'
+      tags:
+        - control
+
+  when: kubectl_on_control_host == true

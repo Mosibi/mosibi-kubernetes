@@ -1,0 +1,10 @@
+---
+domain: example.com
+master_count: 1
+worker_count: 3
+installation_image: "https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.3.2011-20201204.2.x86_64.qcow2"
+user:
+  name: "{{ ansible_facts['user_id'] }}"
+  gecos: "{{ ansible_facts['user_gecos'] }}"
+  group: "{{ ansible_facts['user_id'] }}"
+  ssh_pub_key: "{{ lookup('file', ansible_facts['user_dir'] + '/.ssh/id_rsa.pub') }}"

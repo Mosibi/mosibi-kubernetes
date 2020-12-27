@@ -1,0 +1,4 @@
+---
+first_master_node: "{{ groups['masters'][0] }}"
+bootstrap_token: "{{ hostvars[first_master_node]['bootstrap_token'] }}"
+discovery_token_ca_cert_hash: "{{ hostvars[first_master_node]['discovery_token_ca_cert_hash'] }}"

@@ -1,0 +1,12 @@
+[masters]
+{% for master in _terraform.outputs.masters_data.value %}
+{{ master.name }} ansible_host={{ master.network_interface[0].addresses[0] }} ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter="/usr/bin/python3"
+{% endfor %}
+
+[workers]
+{% for worker in _terraform.outputs.workers_data.value %}
+{{ worker.name }} ansible_host={{ worker.network_interface[0].addresses[0] }}  ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter="/usr/bin/python3"
+{% endfor %}
+
+[control]
+{{ _terraform.outputs.k8s_control_data.value.name }} ansible_host={{ _terraform.outputs.k8s_control_data.value.network_interface[0].addresses[0] }}  ansible_ssh_common_args='-o StrictHostKeyChecking=no' ansible_python_interpreter="/usr/bin/python3"

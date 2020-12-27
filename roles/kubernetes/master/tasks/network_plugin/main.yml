@@ -1,0 +1,8 @@
+---
+- name: Install network plugin
+  include_tasks: "{{ network_plugin }}.yml"
+  tags:
+    - master
+    - network
+    - cilium
+    - calico

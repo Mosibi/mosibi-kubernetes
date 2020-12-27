@@ -1,0 +1,64 @@
+---
+- name: elrepo yum repo
+  yum_repository:
+    name: elrepo
+    description: 'ELRepo.org Community Enterprise Linux Repository'
+    baseurl:
+        - http://elrepo.org/linux/elrepo/el{{ ansible_distribution_major_version }}/$basearch/
+        - http://mirrors.coreix.net/elrepo/elrepo/el{{ ansible_distribution_major_version }}/$basearch/
+        - http://mirror.rackspace.com/elrepo/elrepo/el{{ ansible_distribution_major_version }}/$basearch/
+        - http://repos.lax-noc.com/elrepo/elrepo/el{{ ansible_distribution_major_version }}/$basearch/
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+    protect: false
+
+- name: elrepo-kernel yum repo
+  yum_repository:
+    name: elrepo-kernel
+    description: 'ELRepo.org Community Enterprise Linux Kernel Repository'
+    baseurl:
+    - http://elrepo.org/linux/kernel/el{{ ansible_distribution_major_version }}/$basearch/
+    - http://mirrors.coreix.net/elrepo/kernel/el{{ ansible_distribution_major_version }}/$basearch/
+    - http://mirror.rackspace.com/elrepo/kernel/el{{ ansible_distribution_major_version }}/$basearch/
+    - http://repos.lax-noc.com/elrepo/kernel/el{{ ansible_distribution_major_version }}/$basearch/
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+    protect: false
+
+- name: Install kernel-ml package
+  yum:
+    name: kernel-ml
+    state: installed
+  register: _yum_kernel_upgrade
+
+- name: Set GRUB_DEFAULT to saved
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_DEFAULT'
+    line: 'GRUB_DEFAULT=saved'
+  register: _set_grub_default
+  
+- name: Run grub2-mkconfig
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  when: ( _yum_kernel_upgrade.changed == true ) or ( _set_grub_default.changed == true )
+  
+- name: Set default kernel to new kernel
+  command: grub2-set-default 0
+  when: ( _yum_kernel_upgrade.changed == true ) or ( _set_grub_default.changed == true )
+  
+- name: reboot system with new kernel
+  reboot:
+  when: ( _yum_kernel_upgrade.changed == true ) or ( _set_grub_default.changed == true )
+
+- name: Gather facts
+  setup:
+  when: ( _yum_kernel_upgrade.changed == true ) or ( _set_grub_default.changed == true )
+
+- name: Check kernel version
+  fail:
+    msg: "Kernel version should be higher then 4.8 when Cilium is used as network plugin, but is {{ ansible_facts['kernel'] }}"
+  when:
+    - network_plugin == 'cilium'
+    - ansible_kernel is version_compare('4.8','<')

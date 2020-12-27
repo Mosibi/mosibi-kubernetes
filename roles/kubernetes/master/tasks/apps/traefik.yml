@@ -1,0 +1,55 @@
+---
+# https://doc.traefik.io/traefik/getting-started/install-traefik/#use-the-helm-chart
+
+- name: Add Traefik Helm repo
+  community.kubernetes.helm_repository:
+    name: traefik
+    repo_url: https://helm.traefik.io/traefik
+  tags:
+    - traefik
+    - master
+
+- name: Create namespace traefik
+  community.kubernetes.k8s:
+    name: traefik
+    api_version: v1
+    kind: Namespace
+    state: present
+  tags:
+    - traefik
+    - master
+
+- name: Install Traefik
+  community.kubernetes.helm:
+    name: traefik
+    chart_ref: traefik/traefik
+    release_namespace: traefik
+    release_values:
+      ingressRoute:
+        dashboard:
+          enabled: false
+  tags:
+    - traefik
+    - master
+
+- name: Configure an IngressRoute for the Treafik dashboard
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: traefik.containo.us/v1alpha1
+      kind: IngressRoute
+      metadata:
+        name: dashboard
+        namespace: traefik
+      spec:
+        entryPoints:
+          - web
+        routes:
+          - match: Host(`{{ traefik_ingress_hostname }}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+            kind: Rule
+            services:
+              - name: api@internal
+                kind: TraefikService
+  tags:
+    - traefik
+    - master

@@ -1,0 +1,40 @@
+---  
+# TODO: cilium does not like selinux atm, create a policy for it
+- name: Put SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: permissive
+  tags:
+    - common
+
+- name: Upgrade to newer kernel
+  include_tasks: upgrade_kernel.yml
+  when:
+    - network_plugin == 'cilium'
+    - ansible_kernel is version_compare('4.8','<')
+  tags:
+    - common
+
+- name: Disable firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: false
+  failed_when: false
+  tags:
+    - common
+
+- name: Disable swap
+  include_tasks: disable_swap.yml
+  tags:
+    - common
+
+- name: Install the container runtime engine
+  include_tasks: runtime_{{ container_runtime_engine }}.yml
+  tags:
+    - common
+
+- name: Install and configure Kubernetes requirements
+  include_tasks: kubernetes.yml
+  tags:
+    - common

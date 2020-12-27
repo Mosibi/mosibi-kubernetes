@@ -1,0 +1,4 @@
+---
+debug_common: false
+network_plugin: cilium
+container_runtime_engine: 'crio'

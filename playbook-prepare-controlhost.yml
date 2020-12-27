@@ -1,0 +1,49 @@
+---
+- name: Configure the control host
+  hosts:
+    - control
+  become: false
+  tasks:
+    - name: Install packages
+      package:
+        state: present
+        name: [ 'rsync', 'epel-release', 'bash-completion' ]
+      become: true
+
+    - name: Install Ansible
+      package:
+        state: present
+        name: ansible
+      become: true
+    
+    - name: Ensure .ssh dir is present
+      file:
+        path: "{{ ansible_facts['user_dir'] }}/.ssh"
+        state: directory
+        mode: 0700
+
+    - name: Install SSH key files
+      copy:
+        src: "{{ local_home }}/.ssh/{{ item.filename }}"
+        dest: "{{ ansible_facts['user_dir'] }}/.ssh/{{ item.filename }}"
+        mode: "{{ item.mode }}"
+      vars:
+        local_home: "{{ lookup('env','HOME') }}"
+      loop:
+        - { filename: id_rsa, mode: "0600" }
+        - { filename: id_rsa.pub, mode: "0644" } 
+
+    - name: Install collections using ansible-galaxy
+      command: "ansible-galaxy collection install {{ item.namespace }}.{{ item.name }}"
+      args:
+        creates: "{{ ansible_facts['user_dir'] }}/.ansible/collections/ansible_collections/{{ item.namespace }}/{{ item.name }}"
+      loop:
+        - { namespace: community, name: general }
+        - { namespace: community, name: kubernetes }
+
+    - name: Synchronize mosibi-kubernetes
+      synchronize:
+        src: "{{ playbook_dir }}"
+        dest: "{{ ansible_facts['user_dir'] }}"
+      tags:
+        - sync

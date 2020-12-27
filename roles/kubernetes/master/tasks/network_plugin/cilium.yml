@@ -1,0 +1,26 @@
+---
+# https://github.com/cilium/cilium/issues/10645
+# https://docs.cilium.io/en/v1.8/operations/system_requirements/
+# echo 'net.ipv4.conf.lxc*.rp_filter = 0' > /etc/sysctl.d/99-override_cilium_rp_filter.conf
+# systemctl restart systemd-sysctl
+
+- name: Add Cilium Helm repo
+  community.kubernetes.helm_repository:
+    name: cilium
+    repo_url: https://helm.cilium.io
+  tags:
+    - cilium
+    - network
+    - master
+
+- name: Install Cilium
+  community.kubernetes.helm:
+    name: cilium
+    chart_ref: cilium/cilium
+    chart_version: "{{ cilium_release }}"
+    release_namespace: kube-system
+    release_values: "{{ cilium_helm_values }}"
+  tags:
+    - cilium
+    - network
+    - master

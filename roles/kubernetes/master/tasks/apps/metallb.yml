@@ -1,0 +1,80 @@
+---
+# https://metallb.universe.tf/installation/
+
+- name: Create namespace metallb
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: metallb-system
+        labels:
+          app: metallb
+  tags:
+    - metallb
+
+- name: Install MetalLB
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('file', 'apps/metallb-v0.9.4.yaml') }}"
+  tags:
+    - metallb
+
+- name: Check if the memberlist Secret is present
+  community.kubernetes.k8s_info:
+    api_version: v1
+    kind: Secret
+    namespace: metallb-system
+  register: secrets
+  tags:
+    - metallb
+
+- name: Generate secretkey for the memberlist Secret
+  command:
+    cmd: openssl rand -hex 128
+  vars:
+    _secrets: "{{ secrets | community.general.json_query('resources[*].metadata.name') }}"
+  register: openssl_output
+  tags:
+    - metallb
+  when: not 'memberlist' in _secrets
+
+- name: Create a Secret memberlist
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        creationTimestamp: null
+        name: memberlist
+        namespace: metallb-system
+      data:
+        secretkey: "{{ openssl_output.stdout }}"
+  vars:
+    _secrets: "{{ secrets | community.general.json_query('resources[*].metadata.name') }}"
+  tags:
+    - metallb
+  when: not 'memberlist' in _secrets
+
+- name: Configure MetalLB using a ConfigMap
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        namespace: metallb-system
+        name: config
+      data:
+        config: |
+          address-pools:
+          - name: default
+            protocol: layer2
+            addresses:
+            - {{ metallb_pool_start }}-{{ metallb_pool_end }}
+  tags:
+    - metallb
+
+  
