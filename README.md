@@ -10,6 +10,8 @@ The Ansible role `infrastructure` is available to install a cluster of virtual m
 
 This project is tested with CentOS 8, it will probably also run with CentOS 7. There are hooks and some preliminary code for docker as container runtime engine and calico are network plugin, but be aware that those are not tested and only provided as an example.
 
+On my [personal blog](https://blog.mosibi.nl) you will find an [article](https://blog.mosibi.nl/all/2020/12/27/mosibi-kubernetes.html) I wrote about this project with extra information.
+
 ## Create the infrastructure
 This **optional** step can be used to create a virtual infrastructure where Kubernetes can be installed on. By default it will create five virtual systems, one control host, one master and three workers. The control host is a host where the second part of the installation, installing the Kubernetes cluster, can be executed from. By using a control host, your workstation will not be tainted with software needed for the installation.
 
