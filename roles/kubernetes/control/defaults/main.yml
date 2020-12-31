@@ -1,3 +1,4 @@
 ---
 debug_control: false
 kubectl_on_control_host: true
+helm_on_control_host: true
