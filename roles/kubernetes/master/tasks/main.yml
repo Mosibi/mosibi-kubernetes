@@ -15,9 +15,6 @@
     path: "/etc/kubernetes/pki/ca.key"
   register: kubeadm_ca_key
 
-- name: Get or generate kubernetes bootstrap token
-  include_tasks: bootstrap_token.yml
-
 - name: Init cluster if needed
   include_tasks: init.yml
   when: not kubeadm_ca_key.stat.exists
@@ -55,6 +52,9 @@
     mode: 0600
     flat: yes
   when: kubectl_on_control_host == true
+
+- name: Get or generate kubernetes bootstrap token
+  include_tasks: bootstrap_token.yml
 
 - name: Download and extract Helm
   unarchive:

@@ -9,7 +9,6 @@
     kubeadm init --service-cidr {{ service_cidr }} \
                  --kubernetes-version {{ kubernetes_version }} \
                  --pod-network-cidr {{ pod_network_cidr }} \
-                 --token {{ bootstrap_token }} \
                  --apiserver-advertise-address {{ apiserver_advertise_address }} \
                  --node-name {{ ansible_hostname }} \
                  {{ extended_kubeadm_opts }}
