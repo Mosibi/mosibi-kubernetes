@@ -12,6 +12,7 @@ Install virtual machines using Terraform and libvirt
   * `group`: Group name (Default: `same as name`)
   * `ssh_pub_key`: Public key for the user (Default: `$HOME/.ssh/id_rsa.pub from user who executes the playbook`)
 * `tf_binary_path`: Path to the terraform binary (Default: `False`)
+* `debug_terraform`: Enable or disable debugging the role (Default: `false`)
 
 ## Dependencies
 * Terraform: https://www.terraform.io/downloads.html

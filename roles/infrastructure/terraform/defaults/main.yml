@@ -8,3 +8,4 @@ user:
   gecos: "{{ ansible_facts['user_gecos'] }}"
   group: "{{ ansible_facts['user_id'] }}"
   ssh_pub_key: "{{ lookup('file', ansible_facts['user_dir'] + '/.ssh/id_rsa.pub') }}"
+debug_terraform: false
