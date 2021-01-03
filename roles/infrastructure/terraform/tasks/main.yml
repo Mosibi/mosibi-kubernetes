@@ -16,7 +16,7 @@
       master_count: "{{ master_count }}"
       worker_count: "{{ worker_count }}"
   register: _terraform
-  until: _terraform.outputs.workers_data.value[0].network_interface[0].addresses | length > 0
+  until: _terraform.outputs.workers_data.value[0].network_interface[0].addresses | default([]) | length > 0
   retries: 10
   delay: 10
 
