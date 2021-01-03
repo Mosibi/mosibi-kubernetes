@@ -43,3 +43,11 @@ When the `infrastructure` role is used, the file *inventory* is present, else yo
 
 ### Custom configuration
 The subroles under Kubernetes, support several parameters, to set for example the Kubernetes version which must be used, see the README.md files in those subroles for more information and when needed, edit the file *group_vars/all/kubernetes.yml* to change the default values for a parameter.
+
+## Cleanup everything
+Removing all the nodes and their disks is very easy if you created everything with the infrastructure role. Just change the directory to `roles/infrastructure/terraform/tf-data` and execute `terraform destroy`
+
+```lang=shell
+cd roles/infrastructure/terraform/tf-data
+terraform destroy --var 'domain=example.com' --var 'installation_image=/dev/null' --var 'master_count=1' --var 'worker_count=3' --auto-approve
+```
