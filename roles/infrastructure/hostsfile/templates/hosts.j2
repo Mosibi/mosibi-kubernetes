@@ -2,6 +2,6 @@
 ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
 {% for host in groups.all %}
 {% if host != 'localhost' %}
-{{ hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['inventory_hostname_short'] }} {{ host }}
+{{ hostvars[host]['ansible_default_ipv4']['address'] }} {{ hostvars[host]['inventory_hostname_short'] }} {{ hostvars[host]['ansible_fqdn'] }}
 {% endif %}
 {% endfor %}
