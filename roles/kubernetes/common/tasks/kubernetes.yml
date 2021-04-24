@@ -33,6 +33,7 @@
       value: "{{ item.value }}"
   loop:
     - { name: 'net.ipv4.ip_forward', value: 1 }
+    - { name: 'net.bridge.bridge-nf-call-iptables', value: 1 }
 
 - name: Run the kubelet service
   service:

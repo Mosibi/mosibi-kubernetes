@@ -1,4 +1,2 @@
 ---
 kubernetes_version: "v1.20.1"
-cilium_release: 1.9.1
-helm_version: v3.4.0
