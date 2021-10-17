@@ -4,6 +4,12 @@
     src: cloud-init.cfg.j2
     dest: "{{ playbook_dir }}/roles/infrastructure/terraform/tf-data/cloud-init.cfg"
 
+- name: Copy Terraform main.tf
+  template:
+    src: main.tf.j2
+    dest: "{{ playbook_dir }}/roles/infrastructure/terraform/tf-data/main.tf"
+    mode: 0644
+
 - name: Create nodes using Terraform
   terraform:
     project_path: "{{ playbook_dir }}/roles/infrastructure/terraform/tf-data"
@@ -34,7 +40,7 @@
   failed_when: item.network_interface[0].addresses | length < 1
   when: item.network_interface[0].addresses | length < 1
 
-- name: Create infrastructure file
+- name: Create inventory file
   template:
     src: inventory.j2
     dest: "{{ playbook_dir }}/inventory"
