@@ -68,7 +68,7 @@ resource "libvirt_domain" "k8s_control" {
     wait_for_lease = true
   }
 
-{% if openvswitch_bridge == 'openvswitch' %}
+{% if openvswitch_bridge is sameas true %}
   xml {
     xslt = file("ovs-port.xsl")
   }
@@ -136,7 +136,7 @@ resource "libvirt_domain" "k8s_master" {
     wait_for_lease = true
   }
 
-{% if openvswitch_bridge == 'openvswitch' %}
+{% if openvswitch_bridge is sameas true %}
   xml {
     xslt = file("ovs-port.xsl")
   }
@@ -203,7 +203,7 @@ resource "libvirt_domain" "k8s_worker" {
     wait_for_lease = true
   }
 
-{% if openvswitch_bridge == 'openvswitch' %}
+{% if openvswitch_bridge is sameas true %}
   xml {
     xslt = file("ovs-port.xsl")
   }
