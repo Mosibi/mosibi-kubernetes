@@ -2,7 +2,7 @@
 # https://metallb.universe.tf/installation/
 
 - name: Create namespace metallb
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: v1
@@ -15,14 +15,14 @@
     - metallb
 
 - name: Install MetalLB
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('file', 'apps/metallb-v0.9.4.yaml') }}"
   tags:
     - metallb
 
 - name: Check if the memberlist Secret is present
-  community.kubernetes.k8s_info:
+  kubernetes.core.k8s_info:
     api_version: v1
     kind: Secret
     namespace: metallb-system
@@ -41,7 +41,7 @@
   when: not 'memberlist' in _secrets
 
 - name: Create a Secret memberlist
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: v1
@@ -59,7 +59,7 @@
   when: not 'memberlist' in _secrets
 
 - name: Configure MetalLB using a ConfigMap
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: v1

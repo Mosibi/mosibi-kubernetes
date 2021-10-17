@@ -97,7 +97,7 @@
 ###
 
 - name: Configure an IngressRoute for the Hubble ui
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition:
       apiVersion: traefik.containo.us/v1alpha1
@@ -118,4 +118,6 @@
   tags:
     - cilium
     - master
-  when: (install_hubble | bool)
+  when:
+    - (install_traefik | bool)
+    - (install_hubble | bool)

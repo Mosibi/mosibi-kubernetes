@@ -24,10 +24,9 @@
   loop:
     - "kubelet-{{ rpm_version }}"
     - "kubeadm-{{ rpm_version }}"
-    - "kubectl-{{ rpm_version }}"
     - tc
 
-- name: Kubernetes systctl settings
+- name: Kubernetes sysctl settings
   sysctl:
       name: "{{ item.name }}"
       value: "{{ item.value }}"

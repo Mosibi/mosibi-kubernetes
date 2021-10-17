@@ -14,8 +14,9 @@ helm_version: v3.5.4  # see https://github.com/helm/helm/releases
 
 # Cilium
 network_plugin: cilium
-cilium_release: 1.9.6    # see https://helm.cilium.io/
+cilium_release: 1.10.5    # see https://helm.cilium.io/
 install_hubble: true
+cilium_enable_bgp: false
 hubble_ui_ingress_hostname: hubble.example.com
 
 # Traefik

@@ -1,6 +1,6 @@
 ---
 - name: Install Calico
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'calico.yaml.j2') }}"
   tags:

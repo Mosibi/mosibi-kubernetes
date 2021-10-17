@@ -5,7 +5,7 @@ Install virtual machines using Terraform and libvirt
 * `domain`: Domain name for the virtual machine (Default: `example.com`)
 * `master_count`: Number of master nodes to create (Default: `1`)
 * `worker_count`: Number of worker nodes to create (Default: `3`)
-* `installation_image`: Image used to install the nodes (Default: `https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.3.2011-20201204.2.x86_64.qcow2`)
+* `installation_image`: Image used to install the nodes (Default: `https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.4.2105-20210603.0.x86_64.qcow2`)
 * `user`: Dictionary with user information for the default user which is created on all nodes
   * `name`:  User name (Default: `Username from user who executes the playbook`)
   * `gecos`: Gecos information (Default: `Gecos from user who executes the playbook`) 

@@ -42,7 +42,7 @@ After installing the nodes, with or without the `infrastructure` role, the insta
 When the `infrastructure` role is used, the file *inventory* is present, else you need to create it yourself, see *inventory.example*. 
 
 ### Custom configuration
-The subroles under Kubernetes, support several parameters, to set for example the Kubernetes version which must be used, see the README.md files in those subroles for more information and when needed, edit the file *group_vars/all/kubernetes.yml* to change the default values for a parameter.
+The subroles under Kubernetes, support several parameters, to set for example the [Kubernetes version](https://storage.googleapis.com/kubernetes-release/release/stable.txt) which must be used, see the README.md files in those subroles for more information and when needed, edit the file *group_vars/all/kubernetes.yml* to change the default values for a parameter.
 
 ## Cleanup everything
 Removing all the nodes and their disks is very easy if you created everything with the infrastructure role. Just change the directory to `roles/infrastructure/terraform/tf-data` and execute `terraform destroy`

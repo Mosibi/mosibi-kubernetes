@@ -1,4 +1,7 @@
 ---
 debug_control: false
 kubectl_on_control_host: true
+
+# Helm
 helm_on_control_host: false
+helm_version: v3.5.4  # see https://github.com/helm/helm/releases

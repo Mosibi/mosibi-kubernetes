@@ -60,9 +60,20 @@ resource "libvirt_domain" "k8s_control" {
   }
 
   network_interface {
+{% if network_interface_type == 'bridge' %}
+    bridge = "switch0"
+{% else %}
     network_name = "default"
+{% endif %}
     wait_for_lease = true
   }
+
+{% if openvswitch_bridge == 'openvswitch' %}
+  xml {
+    xslt = file("ovs-port.xsl")
+  }
+{% endif %}
+
 }
 
 ###
@@ -117,9 +128,19 @@ resource "libvirt_domain" "k8s_master" {
   }
 
   network_interface {
+{% if network_interface_type == 'bridge' %}
+    bridge = "switch0"
+{% else %}
     network_name = "default"
+{% endif %}
     wait_for_lease = true
   }
+
+{% if openvswitch_bridge == 'openvswitch' %}
+  xml {
+    xslt = file("ovs-port.xsl")
+  }
+{% endif %}
 }
 
 ###
@@ -174,7 +195,17 @@ resource "libvirt_domain" "k8s_worker" {
   }
 
   network_interface {
+{% if network_interface_type == 'bridge' %}
+    bridge = "switch0"
+{% else %}
     network_name = "default"
+{% endif %}
     wait_for_lease = true
   }
+
+{% if openvswitch_bridge == 'openvswitch' %}
+  xml {
+    xslt = file("ovs-port.xsl")
+  }
+{% endif %}
 }

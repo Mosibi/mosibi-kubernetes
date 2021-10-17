@@ -39,7 +39,7 @@
         creates: "{{ ansible_facts['user_dir'] }}/.ansible/collections/ansible_collections/{{ item.namespace }}/{{ item.name }}"
       loop:
         - { namespace: community, name: general }
-        - { namespace: community, name: kubernetes }
+        - { namespace: kubernetes, name: core }
 
     - name: Synchronize mosibi-kubernetes
       synchronize:

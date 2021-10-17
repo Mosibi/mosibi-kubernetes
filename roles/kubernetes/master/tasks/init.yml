@@ -11,6 +11,7 @@
                  --pod-network-cidr {{ pod_network_cidr }} \
                  --apiserver-advertise-address {{ apiserver_advertise_address }} \
                  --node-name {{ ansible_hostname }} \
+                 --skip-phases "addon/kube-proxy" \
                  {{ extended_kubeadm_opts }}
   register: init_cluster
   
