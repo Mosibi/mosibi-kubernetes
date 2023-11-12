@@ -75,7 +75,6 @@
     - master
     - network
     - cilium
-    - calico
 
 ###
 # Begin: Apps

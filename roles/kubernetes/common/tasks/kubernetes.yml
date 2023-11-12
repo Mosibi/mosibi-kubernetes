@@ -5,17 +5,10 @@
   yum_repository:
     name: kubernetes
     description: "Kubernetes YUM repo"
-    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el{{ _major_version }}-x86_64
-    enabled: true
+    baseurl: "https://pkgs.k8s.io/core:/stable:/{{ kubernetes_installation_version }}/rpm/"
+    gpgkey: "https://pkgs.k8s.io/core:/stable:/{{ kubernetes_installation_version }}/rpm/repodata/repomd.xml.key"
     gpgcheck: true
     repo_gpgcheck: true
-    gpgkey:
-      - https://packages.cloud.google.com/yum/doc/yum-key.gpg
-      - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-  vars:
-     # A CentOS 8 version for the the Yum repo does not exist, the Centos 7 RPMs are also suitable for Centos 8
-    _major_version: "{{ (ansible_distribution_major_version|int == 8) | ternary('7', ansible_distribution_major_version) }}"
-  
 
 - name: Install required packages for Kubernetes
   package:
@@ -24,7 +17,7 @@
   loop:
     - "kubelet-{{ rpm_version }}"
     - "kubeadm-{{ rpm_version }}"
-    - tc
+    - iproute-tc
 
 - name: Kubernetes sysctl settings
   sysctl:

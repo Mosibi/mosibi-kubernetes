@@ -45,5 +45,6 @@
       synchronize:
         src: "{{ playbook_dir }}"
         dest: "{{ ansible_facts['user_dir'] }}"
+      delegate_to: localhost
       tags:
         - sync
