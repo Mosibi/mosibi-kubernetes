@@ -38,8 +38,8 @@ resource "libvirt_volume" "k8s_control" {
 
 resource "libvirt_domain" "k8s_control" {
   name   = "k8s-control"
-  memory = "1024"
-  vcpu   = 1
+  memory = "2048"
+  vcpu   = 2
 
   cpu = {
     mode = "host-passthrough"
