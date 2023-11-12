@@ -29,6 +29,11 @@
   retries: 10
   delay: 10
 
+- name: Debug Terraform output
+  debug:
+    var: _terraform
+  when: ( debug_terraform | bool )
+
 - name: Create inventory file
   template:
     src: inventory.j2
