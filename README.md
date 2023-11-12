@@ -3,7 +3,7 @@ This project contains several Ansible roles to create an virtual infrastructure 
 
 The Ansible role `infrastructure` is available to install a cluster of virtual machines and role `kubernetes` and its sub-roles will install and configure the Kubernetes cluster on (virtual) machines. After installation you will have a Kubernetes cluster with the following components:
 
-* [CRI-O](https://cri-o.io): Container runtime engine. Optional it is also possible to use Docker as a CRE
+* [CRI-O](https://cri-o.io): Container runtime engine.
 * [Cilium](https://cilium.io): Cilium provides secure networking and uses [eBPF](https://ebpf.io) to enforce policies and replaces the need for kube-proxy.
 * [Traefik](https://traefik.io): Traefik is a HTTP reverse proxy and load balancer that makes deploying microservices easy
 * [MetalLB](https://metallb.universe.tf): MetalLB is a load-balancer implementation for bare metal (and virtual) Kubernetes clusters, using standard routing protocols.
