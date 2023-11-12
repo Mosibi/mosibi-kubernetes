@@ -38,8 +38,12 @@ resource "libvirt_volume" "k8s_control" {
 
 resource "libvirt_domain" "k8s_control" {
   name   = "k8s-control"
-  memory = "1024"
-  vcpu   = 1
+  memory = "2048"
+  vcpu   = 2
+
+  cpu = {
+    mode = "host-passthrough"
+  }
 
   cloudinit = libvirt_cloudinit_disk.k8s_control.id
 
@@ -109,6 +113,10 @@ resource "libvirt_domain" "k8s_master" {
   memory = "4096"
   vcpu   = 2
 
+  cpu = {
+    mode = "host-passthrough"
+  }
+
   cloudinit = libvirt_cloudinit_disk.k8s_master[count.index].id
 
   disk {
@@ -175,6 +183,10 @@ resource "libvirt_domain" "k8s_worker" {
   name   = "k8s-worker${count.index + 1}"
   memory = "4096"
   vcpu   = 2
+
+  cpu = {
+    mode = "host-passthrough"
+  }
 
   cloudinit = libvirt_cloudinit_disk.k8s_worker[count.index].id
 

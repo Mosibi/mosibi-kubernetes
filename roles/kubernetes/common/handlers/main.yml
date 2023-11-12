@@ -1,10 +1,10 @@
 ---
-- name: restart crio
-  service:
+- name: Restart crio
+  ansible.builtin.service:
     name: crio
     state: restarted
 
-- name: restart kubelet
-  service:
+- name: Restart kubelet
+  ansible.builtin.service:
     name: kubelet
     state: restarted

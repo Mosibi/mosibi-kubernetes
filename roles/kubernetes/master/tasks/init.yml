@@ -1,11 +1,11 @@
 ---
 - name: Reset Kubernetes component
-  shell: "kubeadm reset --force"
+  ansible.builtin.shell: "kubeadm reset --force"
   register: reset_cluster
 
 - name: Init Kubernetes cluster
   when: reset_cluster is succeeded
-  shell: |
+  ansible.builtin.shell: |
     kubeadm init --service-cidr {{ service_cidr }} \
                  --kubernetes-version {{ kubernetes_version }} \
                  --pod-network-cidr {{ pod_network_cidr }} \

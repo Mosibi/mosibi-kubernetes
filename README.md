@@ -3,12 +3,12 @@ This project contains several Ansible roles to create an virtual infrastructure 
 
 The Ansible role `infrastructure` is available to install a cluster of virtual machines and role `kubernetes` and its sub-roles will install and configure the Kubernetes cluster on (virtual) machines. After installation you will have a Kubernetes cluster with the following components:
 
-* [CRI-O](https://cri-o.io): Container runtime engine. Optional it is also possible to use Docker as a CRE
+* [CRI-O](https://cri-o.io): Container runtime engine.
 * [Cilium](https://cilium.io): Cilium provides secure networking and uses [eBPF](https://ebpf.io) to enforce policies and replaces the need for kube-proxy.
 * [Traefik](https://traefik.io): Traefik is a HTTP reverse proxy and load balancer that makes deploying microservices easy
 * [MetalLB](https://metallb.universe.tf): MetalLB is a load-balancer implementation for bare metal (and virtual) Kubernetes clusters, using standard routing protocols.
 
-This project is tested with CentOS 8, it will probably also run with CentOS 7. There are hooks and some preliminary code for docker as container runtime engine and calico are network plugin, but be aware that those are not tested and only provided as an example.
+This project is tested with Rocky Linux 9, it will probably also work with other Red Hat compatible distributions.
 
 On my [personal blog](https://blog.mosibi.nl) you will find an [article](https://blog.mosibi.nl/all/2020/12/27/mosibi-kubernetes.html) I wrote about this project with extra information.
 

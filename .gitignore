@@ -2,6 +2,6 @@
 **/terraform.tfstate
 **/terraform.tfstate
 **/terraform.tfstate.backup
-**/infrastructure/terraform/tf-data/main.tf
+**/infrastructure/terraform/tf-data/
 **/inventory
 **/cloud-init.cfg

@@ -5,25 +5,25 @@
   become: false
   tasks:
     - name: Install packages
-      package:
+      ansible.builtin.package:
         state: present
         name: [ 'rsync', 'epel-release', 'bash-completion' ]
       become: true
 
     - name: Install Ansible
-      package:
+      ansible.builtin.package:
         state: present
         name: ansible
       become: true
     
     - name: Ensure .ssh dir is present
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_facts['user_dir'] }}/.ssh"
         state: directory
         mode: 0700
 
     - name: Install SSH key files
-      copy:
+      ansible.builtin.copy:
         src: "{{ local_home }}/.ssh/{{ item.filename }}"
         dest: "{{ ansible_facts['user_dir'] }}/.ssh/{{ item.filename }}"
         mode: "{{ item.mode }}"
@@ -34,7 +34,7 @@
         - { filename: id_rsa.pub, mode: "0644" } 
 
     - name: Install collections using ansible-galaxy
-      command: "ansible-galaxy collection install {{ item.namespace }}.{{ item.name }}"
+      ansible.builtin.command: "ansible-galaxy collection install {{ item.namespace }}.{{ item.name }}"
       args:
         creates: "{{ ansible_facts['user_dir'] }}/.ansible/collections/ansible_collections/{{ item.namespace }}/{{ item.name }}"
       loop:
@@ -42,8 +42,9 @@
         - { namespace: kubernetes, name: core }
 
     - name: Synchronize mosibi-kubernetes
-      synchronize:
+      ansible.posix.synchronize:
         src: "{{ playbook_dir }}"
         dest: "{{ ansible_facts['user_dir'] }}"
+      delegate_to: localhost
       tags:
         - sync

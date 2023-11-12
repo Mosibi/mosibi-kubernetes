@@ -31,7 +31,7 @@
     - metallb
 
 - name: Generate secretkey for the memberlist Secret
-  command:
+  ansible.builtin.command:
     cmd: openssl rand -hex 128
   vars:
     _secrets: "{{ secrets | community.general.json_query('resources[*].metadata.name') }}"

@@ -1,17 +1,17 @@
 ---
 - name: Create cloud-init config for Terraform
-  template:
+  ansible.builtin.template:
     src: cloud-init.cfg.j2
     dest: "{{ playbook_dir }}/roles/infrastructure/terraform/tf-data/cloud-init.cfg"
 
 - name: Copy Terraform main.tf
-  template:
+  ansible.builtin.template:
     src: main.tf.j2
     dest: "{{ playbook_dir }}/roles/infrastructure/terraform/tf-data/main.tf"
     mode: 0644
 
 - name: Create nodes using Terraform
-  terraform:
+  community.general.terraform:
     project_path: "{{ playbook_dir }}/roles/infrastructure/terraform/tf-data"
     binary_path: "{{ tf_binary_path | default(omit) }}"
     force_init: true
@@ -22,38 +22,32 @@
       master_count: "{{ master_count }}"
       worker_count: "{{ worker_count }}"
   register: _terraform
-  until: _terraform.outputs.workers_data.value[0].network_interface[0].addresses | default([]) | length > 0
+  until:
+    - (_terraform.outputs.masters_data.value | community.general.json_query('[*].network_interface[*].addresses') | length) == master_count
+    - (_terraform.outputs.workers_data.value | community.general.json_query('[*].network_interface[*].addresses') | length) ==  worker_count
+    - (_terraform.outputs.k8s_control_data.value.network_interface | community.general.json_query('[*].addresses') | length) == 1
   retries: 10
   delay: 10
 
 - name: Debug Terraform output
-  debug:
+  ansible.builtin.debug:
     var: _terraform
   when: ( debug_terraform | bool )
 
-- name: Fail when ip information is not present (yet)
-  debug:
-    msg: "IP information for node {{ item.name }} is not present (yet). Run this playbook again if the systems where still booting"
-  loop_control:
-    label: "{{ item.name }}"
-  loop: "{{ _terraform.outputs.masters_data.value }} + {{ _terraform.outputs.workers_data.value }} + [ {{ _terraform.outputs.k8s_control_data.value }} ]"
-  failed_when: item.network_interface[0].addresses | length < 1
-  when: item.network_interface[0].addresses | length < 1
-
 - name: Create inventory file
-  template:
+  ansible.builtin.template:
     src: inventory.j2
     dest: "{{ playbook_dir }}/inventory"
 
 - name: Add control node to the running inventory
-  add_host:
+  ansible.builtin.add_host:
     name: "{{ _terraform.outputs.k8s_control_data.value.name }}"
     ansible_host: "{{ _terraform.outputs.k8s_control_data.value.network_interface[0].addresses[0] }}"
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     groups: control
 
 - name: Add master node(s) to the running inventory
-  add_host:
+  ansible.builtin.add_host:
     name: "{{ item.name }}"
     ansible_host: "{{ item.network_interface[0].addresses[0] }}"
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
@@ -63,7 +57,7 @@
   loop: "{{ _terraform.outputs.masters_data.value }}"
 
 - name: Add worker node(s) to the running inventory
-  add_host:
+  ansible.builtin.add_host:
     name: "{{ item.name }}"
     ansible_host: "{{ item.network_interface[0].addresses[0] }}"
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
@@ -73,12 +67,17 @@
   loop: "{{ _terraform.outputs.workers_data.value }}"
 
 - name: Wait max 300 seconds for port 22 to become open and contain "OpenSSH"
-  wait_for:
+  ansible.builtin.wait_for:
     port: 22
     timeout: 300
-    host: "{{ item.network_interface[0].addresses[0] }}"
+    host: "{{ item[0][0] }}"
     search_regex: OpenSSH
-    delay: 10
+  vars:
+    _masters: "{{ _terraform.outputs.masters_data.value | community.general.json_query('[*].network_interface[*].addresses') }}"
+    _workers: "{{ _terraform.outputs.workers_data.value | community.general.json_query('[*].network_interface[*].addresses') }}"
+    _control: "{{ _terraform.outputs.k8s_control_data.value.network_interface | community.general.json_query('[*].addresses') }}"
+    _all_ips: "{{ [ _control ] + _workers + _masters }}"
   loop_control:
-    label: "{{ item.name }}"  
-  loop: "{{ _terraform.outputs.masters_data.value }} + {{ _terraform.outputs.workers_data.value }} + [ {{ _terraform.outputs.k8s_control_data.value }} ]"
+    label: "{{ item[0][0] }}"
+  loop: "{{ _all_ips }}"
+

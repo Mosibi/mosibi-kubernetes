@@ -17,13 +17,13 @@
   delegate_facts: True
 
 - name: Create bootstrap token
-  command: kubeadm token create --ttl 10m
+  ansible.builtin.command: kubeadm token create --ttl 10m
   register: bootstrap_token_created
   delegate_to: "{{ first_master_node_ip_address }}"
   when: bootstrap_tokens.resources | length < 1
 
 - name: Set bootstrap token fact from new create token
-  set_fact:
+  ansible.builtin.set_fact:
     bootstrap_token: "{{ bootstrap_token_created.stdout }}"
   vars:
     token: "{{ bootstrap_tokens.resources[0].data }}"

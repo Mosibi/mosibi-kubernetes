@@ -1,8 +1,7 @@
 ---
 - name: Install network plugin
-  include_tasks: "{{ network_plugin }}.yml"
+  ansible.builtin.include_tasks: "{{ network_plugin }}.yml"
   tags:
     - master
     - network
     - cilium
-    - calico

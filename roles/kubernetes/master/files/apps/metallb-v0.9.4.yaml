@@ -273,7 +273,7 @@ spec:
     matchLabels:
       app: metallb
       component: speaker
-  template:
+  ansible.builtin.template:
     metadata:
       annotations:
         prometheus.io/port: '7472'
@@ -356,7 +356,7 @@ spec:
     matchLabels:
       app: metallb
       component: controller
-  template:
+  ansible.builtin.template:
     metadata:
       annotations:
         prometheus.io/port: '7472'

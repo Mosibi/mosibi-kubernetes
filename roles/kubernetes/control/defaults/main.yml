@@ -4,4 +4,4 @@ kubectl_on_control_host: true
 
 # Helm
 helm_on_control_host: false
-helm_version: v3.5.4  # see https://github.com/helm/helm/releases
+helm_version: v3.13.2  # see https://github.com/helm/helm/releases

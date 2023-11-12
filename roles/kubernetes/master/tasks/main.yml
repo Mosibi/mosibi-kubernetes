@@ -5,7 +5,7 @@
     executable: /usr/bin/pip3
 
 - name: Get user information
-  command: "getent passwd {{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
+  ansible.builtin.command: "getent passwd {{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
   changed_when: false
   failed_when: false
   register: _user_info
@@ -16,12 +16,12 @@
   register: kubeadm_ca_key
 
 - name: Init cluster if needed
-  include_tasks: init.yml
+  ansible.builtin.include_tasks: init.yml
   when: not kubeadm_ca_key.stat.exists
   run_once: yes
 
 - name: Get discovery-token-ca-cert-hash
-  shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  ansible.builtin.shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
   register: _discovery_token_ca_cert_hash_content
 
 - name: Set discovery token ca cert hash fact
@@ -30,12 +30,12 @@
   delegate_facts: True
 
 - name: Create Kubernetes config directory for the root user
-  file:
+  ansible.builtin.file:
     path: "/root/.kube/"
     state: directory
 
 - name: Copy admin.conf to /root directory
-  copy:
+  ansible.builtin.copy:
     src: "{{ kubeadmin_config }}"
     dest: "/root/.kube/config"
     owner: root
@@ -44,7 +44,7 @@
     remote_src: true
 
 - name: Copy kube config to control host
-  fetch:
+  ansible.builtin.fetch:
     src: /root/.kube/config
     dest: "{{ _user_info.stdout.split(':')[5] | default('/root') }}/.kube/config"
     owner: "{{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
@@ -54,10 +54,10 @@
   when: kubectl_on_control_host == true
 
 - name: Get or generate kubernetes bootstrap token
-  include_tasks: bootstrap_token.yml
+  ansible.builtin.include_tasks: bootstrap_token.yml
 
 - name: Download and extract Helm
-  unarchive:
+  ansible.builtin.unarchive:
     src: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
     dest: /usr/local/bin
     extra_opts:
@@ -70,24 +70,23 @@
     - master
 
 - name: Install networking
-  include_tasks: network_plugin/main.yml
+  ansible.builtin.include_tasks: network_plugin/main.yml
   tags:
     - master
     - network
     - cilium
-    - calico
 
 ###
 # Begin: Apps
 ###
 - name: Install MetalLB as LoadBalancer
-  include_tasks: apps/metallb.yml
+  ansible.builtin.include_tasks: apps/metallb.yml
   tags:
     - metallb
   when: install_metallb
 
 - name: Install Traefik as Ingress Controller
-  include_tasks: apps/traefik.yml
+  ansible.builtin.include_tasks: apps/traefik.yml
   tags:
     - traefik
   when: install_traefik

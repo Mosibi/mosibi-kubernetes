@@ -13,11 +13,7 @@ cilium_helm_values:
     enabled: true
   hostPort:
     enabled: true
-  hostServices:
-    enabled: false
-  ipam:
-    mode: kubernetes
-  kubeProxyReplacement: strict
+  kubeProxyReplacement: true
   k8sServiceHost: "{{ ansible_facts['default_ipv4']['address'] }}"
   k8sServicePort: 6443
   loadBalancer:
