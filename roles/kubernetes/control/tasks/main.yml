@@ -10,7 +10,7 @@
         - control
     
     - name: Get user information
-      command: "getent passwd {{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
+      ansible.builtin.command: "getent passwd {{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
       changed_when: false
       failed_when: false
       register: _user_info
@@ -18,7 +18,7 @@
         - control
     
     - name: Create kube config directory
-      file:
+      ansible.builtin.file:
         path: "{{ _user_info.stdout.split(':')[5] | default('/root') }}/.kube"
         state: directory
         owner: "{{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
@@ -28,7 +28,7 @@
         - control
 
     - name: Configure bash completion
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ _user_info.stdout.split(':')[5] | default('/root') }}/.bashrc"
         owner: "{{ ansible_facts['env']['SUDO_UID'] | default(0) }}"
         group: "{{ ansible_facts['env']['SUDO_GID'] | default(0) }}"
@@ -41,7 +41,7 @@
   when: kubectl_on_control_host == true
 
 - name: Download and extract Helm
-  unarchive:
+  ansible.builtin.unarchive:
     src: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
     dest: /usr/local/bin
     extra_opts:

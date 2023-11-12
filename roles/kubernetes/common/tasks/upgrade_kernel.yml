@@ -1,6 +1,6 @@
 ---
 - name: elrepo yum repo
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: elrepo
     description: 'ELRepo.org Community Enterprise Linux Repository'
     baseurl:
@@ -14,7 +14,7 @@
     protect: false
 
 - name: elrepo-kernel yum repo
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: elrepo-kernel
     description: 'ELRepo.org Community Enterprise Linux Kernel Repository'
     baseurl:
@@ -28,36 +28,36 @@
     protect: false
 
 - name: Install kernel-ml package
-  yum:
+  ansible.builtin.yum:
     name: kernel-ml
     state: installed
   register: _yum_kernel_upgrade
 
 - name: Set GRUB_DEFAULT to saved
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/grub
     regexp: '^GRUB_DEFAULT'
     line: 'GRUB_DEFAULT=saved'
   register: _set_grub_default
   
 - name: Run grub2-mkconfig
-  command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
   when: ( _yum_kernel_upgrade.changed == true ) or ( _set_grub_default.changed == true )
   
 - name: Set default kernel to new kernel
-  command: grub2-set-default 0
+  ansible.builtin.command: grub2-set-default 0
   when: ( _yum_kernel_upgrade.changed == true ) or ( _set_grub_default.changed == true )
   
 - name: reboot system with new kernel
-  reboot:
+  ansible.builtin.reboot:
   when: ( _yum_kernel_upgrade.changed == true ) or ( _set_grub_default.changed == true )
 
 - name: Gather facts
-  setup:
+  ansible.builtin.setup:
   when: ( _yum_kernel_upgrade.changed == true ) or ( _set_grub_default.changed == true )
 
 - name: Check kernel version
-  fail:
+  ansible.builtin.fail:
     msg: "Kernel version should be higher then 4.8 when Cilium is used as network plugin, but is {{ ansible_facts['kernel'] }}"
   when:
     - network_plugin == 'cilium'

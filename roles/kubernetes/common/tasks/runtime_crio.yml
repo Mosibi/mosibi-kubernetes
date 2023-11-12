@@ -1,6 +1,6 @@
 ---
 - name: Configure CRI-O repository
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: crio
     description: CRI-O YUM repo
     baseurl: "https://pkgs.k8s.io/addons:/cri-o:/{{ _project_path }}/rpm/"
@@ -10,7 +10,7 @@
     _project_path: 'prerelease:/main'
 
 - name: Load kernel modules needed by CRI-O
-  modprobe:
+  community.general.modprobe:
     name: "{{ item }}"
     state: present
   loop:
@@ -18,24 +18,18 @@
     - "br_netfilter"
 
 - name: Install CRI-O
-  package:
+  ansible.builtin.package:
     name: cri-o
     state: present
 
-# - name: Configure /etc/sysconfig/kubelet
-#   copy:
-#     content: "KUBELET_EXTRA_ARGS=--runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice --cgroup-driver=systemd\n"
-#     dest: /etc/sysconfig/kubelet
-#   notify: restart kubelet
-
 - name: Configure /etc/crictl.yaml
-  copy:
+  ansible.builtin.copy:
     content: "runtime-endpoint: unix:///var/run/crio/crio.sock"
     dest: /etc/crictl.yaml
-  notify: restart crio
+  notify: Restart crio
 
 - name: Service CRI-O
-  service:
+  ansible.builtin.service:
     name: crio
     state: started
     enabled: true

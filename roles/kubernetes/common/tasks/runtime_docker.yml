@@ -2,7 +2,7 @@
 # Install the Docker runtime
 
 - name: Docker YUM repository
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: docker-ce-stable
     description: 'Docker CE Stable - $basearch'
     baseurl: https://download.docker.com/linux/centos/{{ ansible_distribution_major_version }}/$basearch/stable
@@ -11,7 +11,7 @@
     gpgkey: https://download.docker.com/linux/centos/gpg
 
 - name: Install required packages for the Docker runtime
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   loop:
@@ -21,7 +21,7 @@
     - iptables
 
 - name: Run the docker service
-  service:
+  ansible.builtin.service:
     name: docker
     state: started
     enabled: true

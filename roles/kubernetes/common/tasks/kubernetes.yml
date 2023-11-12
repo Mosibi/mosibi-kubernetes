@@ -2,7 +2,7 @@
 # Install/configure the requirements needed by kubeadm/kubernetes
 
 - name: Kubernetes YUM repository
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: kubernetes
     description: "Kubernetes YUM repo"
     baseurl: "https://pkgs.k8s.io/core:/stable:/{{ kubernetes_installation_version }}/rpm/"
@@ -11,7 +11,7 @@
     repo_gpgcheck: true
 
 - name: Install required packages for Kubernetes
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   loop:
@@ -20,7 +20,7 @@
     - iproute-tc
 
 - name: Kubernetes sysctl settings
-  sysctl:
+  ansible.posix.sysctl:
       name: "{{ item.name }}"
       value: "{{ item.value }}"
   loop:
@@ -28,7 +28,7 @@
     - { name: 'net.bridge.bridge-nf-call-iptables', value: 1 }
 
 - name: Run the kubelet service
-  service:
+  ansible.builtin.service:
     name: kubelet
     state: started
     enabled: true
