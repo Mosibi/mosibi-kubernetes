@@ -8,7 +8,7 @@ The Ansible role `infrastructure` is available to install a cluster of virtual m
 * [Traefik](https://traefik.io): Traefik is a HTTP reverse proxy and load balancer that makes deploying microservices easy
 * [MetalLB](https://metallb.universe.tf): MetalLB is a load-balancer implementation for bare metal (and virtual) Kubernetes clusters, using standard routing protocols.
 
-This project is tested with CentOS 8, it will probably also run with CentOS 7. There are hooks and some preliminary code for docker as container runtime engine and calico are network plugin, but be aware that those are not tested and only provided as an example.
+This project is tested with Rocky Linux 9, it will probably also work with other Red Hat compatible distributions.
 
 On my [personal blog](https://blog.mosibi.nl) you will find an [article](https://blog.mosibi.nl/all/2020/12/27/mosibi-kubernetes.html) I wrote about this project with extra information.
 

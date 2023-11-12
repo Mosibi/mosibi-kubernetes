@@ -2,7 +2,7 @@
 domain: example.com
 master_count: 1
 worker_count: 3
-installation_image: "https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.4.2105-20210603.0.x86_64.qcow2"
+installation_image: "https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2"
 user:
   name: "{{ ansible_facts['user_id'] }}"
   gecos: "{{ ansible_facts['user_gecos'] }}"
