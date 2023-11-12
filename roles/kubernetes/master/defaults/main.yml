@@ -19,7 +19,7 @@ cilium_enable_bgp: false
 hubble_ui_ingress_hostname: hubble.example.com
 
 # Traefik
-install_traefik: true
+install_traefik: false
 traefik_ingress_hostname: traefik.example.com
 
 # MetalLB
